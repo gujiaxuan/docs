@@ -1,0 +1,349 @@
+---
+title: "Chat Completions"
+description: "Send messages and receive AI-generated responses using the Chat Completions API."
+---
+
+## Endpoint
+
+```
+POST https://api.hapuppy.com/v1/chat/completions
+```
+
+The Chat Completions API is fully compatible with the [OpenAI Chat Completions](https://platform.openai.com/docs/api-reference/chat) format. Any existing code using the OpenAI API can be pointed to Hapuppy by changing the base URL and API key.
+
+## Basic Request
+
+<CodeGroup>
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-hapuppy-xxx",
+    base_url="https://api.hapuppy.com/v1"
+)
+
+response = client.chat.completions.create(
+    model="claude-sonnet-4-20250514",
+    messages=[
+        {"role": "system", "content": "You are a helpful assistant."},
+        {"role": "user", "content": "Explain recursion in programming."}
+    ],
+    temperature=0.7,
+    max_tokens=1024
+)
+
+print(response.choices[0].message.content)
+```
+
+```typescript TypeScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "sk-hapuppy-xxx",
+  baseURL: "https://api.hapuppy.com/v1",
+});
+
+const response = await client.chat.completions.create({
+  model: "claude-sonnet-4-20250514",
+  messages: [
+    { role: "system", content: "You are a helpful assistant." },
+    { role: "user", content: "Explain recursion in programming." }
+  ],
+  temperature: 0.7,
+  max_tokens: 1024,
+});
+
+console.log(response.choices[0].message.content);
+```
+
+```bash cURL
+curl https://api.hapuppy.com/v1/chat/completions \
+  -H "Authorization: Bearer sk-hapuppy-xxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4-20250514",
+    "messages": [
+      {"role": "system", "content": "You are a helpful assistant."},
+      {"role": "user", "content": "Explain recursion in programming."}
+    ],
+    "temperature": 0.7,
+    "max_tokens": 1024
+  }'
+```
+
+</CodeGroup>
+
+## Request Parameters
+
+| Parameter | Type | Required | Description |
+|-----------|------|----------|-------------|
+| `model` | string | Yes | The model ID to use (e.g., `claude-sonnet-4-20250514`, `gpt-4o`). See [Models](/models). |
+| `messages` | array | Yes | Array of message objects with `role` and `content`. |
+| `temperature` | number | No | Sampling temperature between 0 and 2. Default varies by model. |
+| `max_tokens` | integer | No | Maximum number of tokens to generate. |
+| `stream` | boolean | No | If `true`, returns a streaming response. Default `false`. |
+| `top_p` | number | No | Nucleus sampling parameter. Default `1`. |
+| `frequency_penalty` | number | No | Penalizes frequent tokens. Range: -2.0 to 2.0. Default `0`. |
+| `presence_penalty` | number | No | Penalizes tokens already present. Range: -2.0 to 2.0. Default `0`. |
+| `stop` | string or array | No | Sequences where the model should stop generating. |
+| `tools` | array | No | List of tools (functions) the model can call. |
+| `tool_choice` | string or object | No | Controls tool usage: `auto`, `none`, or a specific tool. |
+
+### Message Roles
+
+| Role | Description |
+|------|-------------|
+| `system` | Sets the behavior and context for the assistant. |
+| `user` | Messages from the user. |
+| `assistant` | Previous assistant responses (for multi-turn conversations). |
+| `tool` | Results from tool/function calls. |
+
+## Response Format
+
+```json
+{
+  "id": "chatcmpl-abc123",
+  "object": "chat.completion",
+  "created": 1710000000,
+  "model": "claude-sonnet-4-20250514",
+  "choices": [
+    {
+      "index": 0,
+      "message": {
+        "role": "assistant",
+        "content": "Recursion is a programming technique where..."
+      },
+      "finish_reason": "stop"
+    }
+  ],
+  "usage": {
+    "prompt_tokens": 25,
+    "completion_tokens": 150,
+    "total_tokens": 175
+  }
+}
+```
+
+## Streaming
+
+Enable streaming to receive tokens as they are generated. This is useful for real-time UIs.
+
+<CodeGroup>
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-hapuppy-xxx",
+    base_url="https://api.hapuppy.com/v1"
+)
+
+stream = client.chat.completions.create(
+    model="claude-sonnet-4-20250514",
+    messages=[
+        {"role": "user", "content": "Write a short poem about coding."}
+    ],
+    stream=True
+)
+
+for chunk in stream:
+    if chunk.choices[0].delta.content is not None:
+        print(chunk.choices[0].delta.content, end="")
+```
+
+```typescript TypeScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "sk-hapuppy-xxx",
+  baseURL: "https://api.hapuppy.com/v1",
+});
+
+const stream = await client.chat.completions.create({
+  model: "claude-sonnet-4-20250514",
+  messages: [
+    { role: "user", content: "Write a short poem about coding." }
+  ],
+  stream: true,
+});
+
+for await (const chunk of stream) {
+  const content = chunk.choices[0]?.delta?.content;
+  if (content) process.stdout.write(content);
+}
+```
+
+```bash cURL
+curl https://api.hapuppy.com/v1/chat/completions \
+  -H "Authorization: Bearer sk-hapuppy-xxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4-20250514",
+    "messages": [
+      {"role": "user", "content": "Write a short poem about coding."}
+    ],
+    "stream": true
+  }'
+```
+
+</CodeGroup>
+
+Each streaming chunk follows the Server-Sent Events (SSE) format:
+
+```
+data: {"id":"chatcmpl-abc","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":"Hello"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-abc","object":"chat.completion.chunk","choices":[{"index":0,"delta":{"content":" world"},"finish_reason":null}]}
+
+data: {"id":"chatcmpl-abc","object":"chat.completion.chunk","choices":[{"index":0,"delta":{},"finish_reason":"stop"}]}
+
+data: [DONE]
+```
+
+## Function Calling
+
+Use tools/functions to let the model interact with external systems.
+
+<CodeGroup>
+
+```python Python
+from openai import OpenAI
+import json
+
+client = OpenAI(
+    api_key="sk-hapuppy-xxx",
+    base_url="https://api.hapuppy.com/v1"
+)
+
+tools = [
+    {
+        "type": "function",
+        "function": {
+            "name": "get_weather",
+            "description": "Get the current weather for a location",
+            "parameters": {
+                "type": "object",
+                "properties": {
+                    "location": {
+                        "type": "string",
+                        "description": "City name, e.g. 'San Francisco, CA'"
+                    }
+                },
+                "required": ["location"]
+            }
+        }
+    }
+]
+
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {"role": "user", "content": "What's the weather in Tokyo?"}
+    ],
+    tools=tools,
+    tool_choice="auto"
+)
+
+# Check if the model wants to call a function
+message = response.choices[0].message
+if message.tool_calls:
+    tool_call = message.tool_calls[0]
+    args = json.loads(tool_call.function.arguments)
+    print(f"Function: {tool_call.function.name}")
+    print(f"Arguments: {args}")
+
+    # After calling your function, send the result back
+    follow_up = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "user", "content": "What's the weather in Tokyo?"},
+            message,
+            {
+                "role": "tool",
+                "tool_call_id": tool_call.id,
+                "content": json.dumps({"temperature": "22°C", "condition": "Sunny"})
+            }
+        ],
+        tools=tools
+    )
+    print(follow_up.choices[0].message.content)
+```
+
+```typescript TypeScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "sk-hapuppy-xxx",
+  baseURL: "https://api.hapuppy.com/v1",
+});
+
+const tools: OpenAI.ChatCompletionTool[] = [
+  {
+    type: "function",
+    function: {
+      name: "get_weather",
+      description: "Get the current weather for a location",
+      parameters: {
+        type: "object",
+        properties: {
+          location: {
+            type: "string",
+            description: "City name, e.g. 'San Francisco, CA'",
+          },
+        },
+        required: ["location"],
+      },
+    },
+  },
+];
+
+const response = await client.chat.completions.create({
+  model: "gpt-4o",
+  messages: [
+    { role: "user", content: "What's the weather in Tokyo?" }
+  ],
+  tools,
+  tool_choice: "auto",
+});
+
+const message = response.choices[0].message;
+if (message.tool_calls) {
+  const toolCall = message.tool_calls[0];
+  const args = JSON.parse(toolCall.function.arguments);
+  console.log(`Function: ${toolCall.function.name}`);
+  console.log(`Arguments:`, args);
+}
+```
+
+</CodeGroup>
+
+## Vision
+
+Send images for multimodal models that support vision (e.g., `gpt-4o`, `claude-sonnet-4-20250514`).
+
+```python Python
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[
+        {
+            "role": "user",
+            "content": [
+                {"type": "text", "text": "What's in this image?"},
+                {
+                    "type": "image_url",
+                    "image_url": {
+                        "url": "https://example.com/photo.jpg"
+                    }
+                }
+            ]
+        }
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+<Info>
+  Not all models support vision. Check the [Models](/models) page for capabilities.
+</Info>

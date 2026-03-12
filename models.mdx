@@ -1,0 +1,118 @@
+---
+title: "Models"
+description: "Browse all AI models available through Hapuppy."
+---
+
+Hapuppy provides access to 100+ models from leading AI providers. All models are accessible through the same [Chat Completions API](/chat-completions) endpoint.
+
+<Info>
+  For a real-time list of available models and their credit multipliers, visit the [Models page](https://hapuppy.com/models) on the Hapuppy website.
+</Info>
+
+## Anthropic (Claude)
+
+| Model ID | Description |
+|----------|-------------|
+| `claude-sonnet-4-20250514` | Latest Claude Sonnet — balanced intelligence and speed |
+| `claude-opus-4-20250514` | Most capable Claude model for complex tasks |
+| `claude-haiku-3-5-20241022` | Fastest Claude model, ideal for simple tasks |
+
+## OpenAI (GPT)
+
+| Model ID | Description |
+|----------|-------------|
+| `gpt-4o` | GPT-4o — fast, multimodal flagship model |
+| `gpt-4o-mini` | Compact and affordable GPT-4o variant |
+| `gpt-4.1` | Latest GPT-4.1 model |
+| `gpt-4.1-mini` | Compact GPT-4.1 variant |
+| `gpt-4.1-nano` | Smallest GPT-4.1 variant |
+| `o1` | Reasoning model with chain-of-thought |
+| `o1-mini` | Compact reasoning model |
+| `o3` | Advanced reasoning model |
+| `o3-mini` | Compact advanced reasoning model |
+| `o4-mini` | Latest compact reasoning model |
+
+## Google (Gemini)
+
+| Model ID | Description |
+|----------|-------------|
+| `gemini-2.5-pro-preview-05-06` | Latest Gemini Pro with thinking |
+| `gemini-2.5-flash-preview-05-20` | Fast Gemini model with thinking |
+| `gemini-2.0-flash` | High-speed Gemini model |
+| `gemini-2.0-flash-lite` | Lightweight Gemini model |
+
+## xAI (Grok)
+
+| Model ID | Description |
+|----------|-------------|
+| `grok-3` | Latest Grok model |
+| `grok-3-mini` | Compact Grok model |
+| `grok-2` | Previous generation Grok |
+
+## DeepSeek
+
+| Model ID | Description |
+|----------|-------------|
+| `deepseek-chat` | DeepSeek V3 chat model |
+| `deepseek-reasoner` | DeepSeek R1 reasoning model |
+
+## Mistral
+
+| Model ID | Description |
+|----------|-------------|
+| `mistral-large-latest` | Most capable Mistral model |
+| `mistral-medium-latest` | Balanced Mistral model |
+| `mistral-small-latest` | Fast and efficient Mistral model |
+| `codestral-latest` | Mistral's code-specialized model |
+
+## Meta (Llama)
+
+| Model ID | Description |
+|----------|-------------|
+| `llama-4-maverick` | Llama 4 Maverick |
+| `llama-4-scout` | Llama 4 Scout |
+| `llama-3.3-70b` | Llama 3.3 70B parameters |
+| `llama-3.1-8b` | Llama 3.1 8B parameters |
+
+## Zhipu (GLM)
+
+| Model ID | Description |
+|----------|-------------|
+| `glm-4-plus` | GLM-4 Plus model |
+| `glm-4-flash` | GLM-4 Flash model |
+| `glm-4-long` | GLM-4 Long context model |
+
+## Using Models
+
+Switch between models by changing the `model` parameter:
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-hapuppy-xxx",
+    base_url="https://api.hapuppy.com/v1"
+)
+
+# Use Claude
+response = client.chat.completions.create(
+    model="claude-sonnet-4-20250514",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+
+# Use GPT-4o
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+
+# Use Gemini
+response = client.chat.completions.create(
+    model="gemini-2.5-pro-preview-05-06",
+    messages=[{"role": "user", "content": "Hello!"}]
+)
+```
+
+<Note>
+  Model availability may change over time. The [Hapuppy website](https://hapuppy.com/models) always has the most up-to-date list.
+</Note>

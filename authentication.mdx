@@ -1,0 +1,144 @@
+---
+title: "Authentication"
+description: "How to authenticate your API requests to Hapuppy."
+---
+
+## API Key
+
+All requests to the Hapuppy API require authentication via a Bearer token in the `Authorization` header.
+
+```bash
+Authorization: Bearer sk-hapuppy-xxxxxxxxxxxxxxxxxxxxx
+```
+
+### Key Format
+
+Hapuppy API keys follow this format:
+
+```
+sk-hapuppy-<random-string>
+```
+
+All keys start with the `sk-hapuppy-` prefix. If your key does not match this format, it is invalid.
+
+### Getting Your Key
+
+1. Log in to your [Hapuppy Dashboard](https://hapuppy.com/dashboard)
+2. Navigate to **API Keys**
+3. Click **Create Key**
+4. Copy and securely store your key
+
+<Warning>
+  API keys are shown only once at creation time. If you lose your key, you'll need to generate a new one.
+</Warning>
+
+## Using Your Key
+
+### HTTP Header
+
+Include your API key in the `Authorization` header of every request:
+
+```bash cURL
+curl https://api.hapuppy.com/v1/chat/completions \
+  -H "Authorization: Bearer sk-hapuppy-xxx" \
+  -H "Content-Type: application/json" \
+  -d '{"model": "claude-sonnet-4-20250514", "messages": [{"role": "user", "content": "Hello"}]}'
+```
+
+### OpenAI SDK
+
+Pass your key as the `api_key` parameter along with the Hapuppy base URL:
+
+<CodeGroup>
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-hapuppy-xxx",
+    base_url="https://api.hapuppy.com/v1"
+)
+```
+
+```typescript TypeScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "sk-hapuppy-xxx",
+  baseURL: "https://api.hapuppy.com/v1",
+});
+```
+
+</CodeGroup>
+
+## Environment Variables
+
+We recommend storing your API key in environment variables rather than hardcoding it.
+
+<Tabs>
+  <Tab title="macOS / Linux">
+    Add to your `~/.bashrc`, `~/.zshrc`, or `~/.profile`:
+
+    ```bash
+    export OPENAI_API_KEY="sk-hapuppy-xxx"
+    export OPENAI_BASE_URL="https://api.hapuppy.com/v1"
+    ```
+
+    Then reload your shell:
+
+    ```bash
+    source ~/.zshrc
+    ```
+  </Tab>
+  <Tab title="Windows">
+    Set environment variables via PowerShell:
+
+    ```powershell
+    [System.Environment]::SetEnvironmentVariable("OPENAI_API_KEY", "sk-hapuppy-xxx", "User")
+    [System.Environment]::SetEnvironmentVariable("OPENAI_BASE_URL", "https://api.hapuppy.com/v1", "User")
+    ```
+  </Tab>
+  <Tab title=".env File">
+    Create a `.env` file in your project root:
+
+    ```env
+    OPENAI_API_KEY=sk-hapuppy-xxx
+    OPENAI_BASE_URL=https://api.hapuppy.com/v1
+    ```
+
+    Load it with a library like `python-dotenv` (Python) or `dotenv` (Node.js).
+
+    <Warning>
+      Add `.env` to your `.gitignore` to prevent accidental commits.
+    </Warning>
+  </Tab>
+</Tabs>
+
+When environment variables are set, the OpenAI SDK automatically picks them up:
+
+```python Python
+from openai import OpenAI
+
+# No need to pass api_key or base_url explicitly
+client = OpenAI()
+```
+
+## Security Best Practices
+
+<AccordionGroup>
+  <Accordion title="Never hardcode keys in source code">
+    Use environment variables or secret management tools (e.g., AWS Secrets Manager, HashiCorp Vault) instead of embedding keys directly in your code.
+  </Accordion>
+  <Accordion title="Never commit keys to version control">
+    Add `.env` files to `.gitignore`. Use tools like `git-secrets` or `trufflehog` to scan for accidentally committed secrets.
+  </Accordion>
+  <Accordion title="Rotate keys regularly">
+    Generate new API keys periodically and revoke old ones from the dashboard.
+  </Accordion>
+  <Accordion title="Use separate keys for different environments">
+    Create distinct keys for development, staging, and production. This limits the blast radius if a key is compromised.
+  </Accordion>
+  <Accordion title="Monitor key usage">
+    Check your dashboard regularly for unexpected usage patterns that might indicate a compromised key.
+  </Accordion>
+</AccordionGroup>

@@ -1,0 +1,171 @@
+---
+title: "Tool Integrations"
+description: "Configure Hapuppy with Claude Code, Cursor, Cline, Continue, and the OpenAI SDK."
+---
+
+Hapuppy is fully compatible with the OpenAI API format, making it easy to integrate with popular AI development tools.
+
+## Claude Code
+
+[Claude Code](https://docs.anthropic.com/en/docs/claude-code) is Anthropic's official CLI tool. Configure it to use Hapuppy by setting environment variables.
+
+Add the following to your shell profile (`~/.bashrc`, `~/.zshrc`, or `~/.profile`):
+
+```bash
+export ANTHROPIC_BASE_URL=https://api.hapuppy.com
+export ANTHROPIC_API_KEY=sk-hapuppy-xxx
+```
+
+Reload your shell and start using Claude Code as usual:
+
+```bash
+source ~/.zshrc
+claude
+```
+
+<Info>
+  Claude Code uses the Anthropic API format natively. Hapuppy handles the translation automatically.
+</Info>
+
+## Cursor
+
+[Cursor](https://cursor.sh) is an AI-powered code editor. Configure it to use Hapuppy as the API backend.
+
+<Steps>
+  <Step title="Open Cursor settings">
+    Go to **Cursor Settings → Models**.
+  </Step>
+  <Step title="Configure the API">
+    Set the following:
+
+    - **OpenAI API Key**: `sk-hapuppy-xxx`
+    - **Override OpenAI Base URL**: `https://api.hapuppy.com/v1`
+  </Step>
+  <Step title="Select a model">
+    Choose any model available through Hapuppy (e.g., `claude-sonnet-4-20250514`, `gpt-4o`).
+  </Step>
+</Steps>
+
+<Note>
+  After saving, restart Cursor for changes to take effect.
+</Note>
+
+## Cline
+
+[Cline](https://github.com/cline/cline) is an AI coding assistant for VS Code.
+
+<Steps>
+  <Step title="Open Cline settings">
+    In VS Code, open the Cline extension sidebar and click the **settings gear** icon.
+  </Step>
+  <Step title="Select API provider">
+    Choose **OpenAI Compatible** as the API provider.
+  </Step>
+  <Step title="Configure connection">
+    Set the following fields:
+
+    - **API Key**: `sk-hapuppy-xxx`
+    - **Base URL**: `https://api.hapuppy.com/v1`
+    - **Model ID**: your preferred model (e.g., `claude-sonnet-4-20250514`)
+  </Step>
+</Steps>
+
+## Continue
+
+[Continue](https://continue.dev) is an open-source AI code assistant. Configure it in `~/.continue/config.json`.
+
+```json config.json
+{
+  "models": [
+    {
+      "title": "Hapuppy - Claude Sonnet",
+      "provider": "openai",
+      "model": "claude-sonnet-4-20250514",
+      "apiKey": "sk-hapuppy-xxx",
+      "apiBase": "https://api.hapuppy.com/v1"
+    },
+    {
+      "title": "Hapuppy - GPT-4o",
+      "provider": "openai",
+      "model": "gpt-4o",
+      "apiKey": "sk-hapuppy-xxx",
+      "apiBase": "https://api.hapuppy.com/v1"
+    }
+  ]
+}
+```
+
+<Info>
+  You can add multiple model configurations to switch between them easily within Continue.
+</Info>
+
+## OpenAI SDK
+
+Since Hapuppy is OpenAI-compatible, any application using the OpenAI SDK works out of the box.
+
+<CodeGroup>
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-hapuppy-xxx",
+    base_url="https://api.hapuppy.com/v1"
+)
+
+response = client.chat.completions.create(
+    model="claude-sonnet-4-20250514",
+    messages=[
+        {"role": "user", "content": "Explain quantum computing in simple terms."}
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+```typescript TypeScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "sk-hapuppy-xxx",
+  baseURL: "https://api.hapuppy.com/v1",
+});
+
+const response = await client.chat.completions.create({
+  model: "claude-sonnet-4-20250514",
+  messages: [
+    { role: "user", content: "Explain quantum computing in simple terms." }
+  ],
+});
+
+console.log(response.choices[0].message.content);
+```
+
+</CodeGroup>
+
+### Using Environment Variables
+
+Set these environment variables so the SDK picks them up automatically:
+
+```bash
+export OPENAI_API_KEY="sk-hapuppy-xxx"
+export OPENAI_BASE_URL="https://api.hapuppy.com/v1"
+```
+
+Then simply:
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI()  # automatically uses env vars
+```
+
+## Other Tools
+
+Any tool or library that supports the OpenAI API format can be configured with:
+
+| Setting | Value |
+|---------|-------|
+| **API Key** | Your `sk-hapuppy-xxx` key |
+| **Base URL** | `https://api.hapuppy.com/v1` |
+| **Model** | Any [supported model](/models) |

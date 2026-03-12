@@ -1,0 +1,196 @@
+---
+title: "Error Handling"
+description: "Understand error responses and how to handle them."
+---
+
+## Error Response Format
+
+When a request fails, Hapuppy returns a JSON error response:
+
+```json
+{
+  "error": {
+    "message": "Invalid API key provided.",
+    "type": "authentication_error",
+    "code": "invalid_api_key"
+  }
+}
+```
+
+| Field | Description |
+|-------|-------------|
+| `message` | Human-readable error description. |
+| `type` | Error category (e.g., `authentication_error`, `rate_limit_error`). |
+| `code` | Machine-readable error code. |
+
+## HTTP Status Codes
+
+| Status Code | Meaning | Common Cause |
+|-------------|---------|-------------|
+| `200` | OK | Request succeeded. |
+| `400` | Bad Request | Malformed request body, missing required parameters. |
+| `401` | Unauthorized | Invalid or missing API key. |
+| `403` | Forbidden | API key lacks permission for the requested resource. |
+| `404` | Not Found | Invalid endpoint or model not found. |
+| `429` | Too Many Requests | Rate limit exceeded or credits exhausted. |
+| `500` | Internal Server Error | Server-side issue. Retry after a short delay. |
+| `502` | Bad Gateway | Upstream provider error. Retry after a short delay. |
+| `503` | Service Unavailable | Service temporarily overloaded. Retry with backoff. |
+
+## Common Errors
+
+### 401 — Invalid API Key
+
+```json
+{
+  "error": {
+    "message": "Invalid API key provided.",
+    "type": "authentication_error",
+    "code": "invalid_api_key"
+  }
+}
+```
+
+**Fix:** Verify your API key starts with `sk-hapuppy-` and is correctly set in your request header or environment variable.
+
+### 429 — Rate Limit Exceeded
+
+```json
+{
+  "error": {
+    "message": "Rate limit exceeded. Please retry after 1 second.",
+    "type": "rate_limit_error",
+    "code": "rate_limit_exceeded"
+  }
+}
+```
+
+**Fix:** All plans have a 100 RPM (requests per minute) rate limit. Reduce your request frequency or add retry logic with exponential backoff.
+
+### 429 — Credits Exhausted
+
+```json
+{
+  "error": {
+    "message": "Insufficient credits. Credits will refresh at UTC 00:00.",
+    "type": "rate_limit_error",
+    "code": "insufficient_credits"
+  }
+}
+```
+
+**Fix:** Your daily credits have been used up. Wait for the next UTC 00:00 refresh or [upgrade your plan](https://hapuppy.com/dashboard).
+
+### 400 — Invalid Model
+
+```json
+{
+  "error": {
+    "message": "Model 'gpt-5' not found.",
+    "type": "invalid_request_error",
+    "code": "model_not_found"
+  }
+}
+```
+
+**Fix:** Check the [Models](/models) page for valid model IDs.
+
+## Retry Strategy
+
+Implement exponential backoff for transient errors (429, 500, 502, 503):
+
+<CodeGroup>
+
+```python Python
+import time
+from openai import OpenAI, APIError, RateLimitError
+
+client = OpenAI(
+    api_key="sk-hapuppy-xxx",
+    base_url="https://api.hapuppy.com/v1"
+)
+
+def chat_with_retry(messages, model="claude-sonnet-4-20250514", max_retries=3):
+    for attempt in range(max_retries):
+        try:
+            return client.chat.completions.create(
+                model=model,
+                messages=messages
+            )
+        except RateLimitError:
+            wait = 2 ** attempt
+            print(f"Rate limited. Retrying in {wait}s...")
+            time.sleep(wait)
+        except APIError as e:
+            if e.status_code in (500, 502, 503):
+                wait = 2 ** attempt
+                print(f"Server error {e.status_code}. Retrying in {wait}s...")
+                time.sleep(wait)
+            else:
+                raise
+    raise Exception("Max retries exceeded")
+
+response = chat_with_retry([
+    {"role": "user", "content": "Hello!"}
+])
+```
+
+```typescript TypeScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "sk-hapuppy-xxx",
+  baseURL: "https://api.hapuppy.com/v1",
+});
+
+async function chatWithRetry(
+  messages: OpenAI.ChatCompletionMessageParam[],
+  model = "claude-sonnet-4-20250514",
+  maxRetries = 3
+) {
+  for (let attempt = 0; attempt < maxRetries; attempt++) {
+    try {
+      return await client.chat.completions.create({ model, messages });
+    } catch (error) {
+      if (error instanceof OpenAI.RateLimitError ||
+          (error instanceof OpenAI.APIError && [500, 502, 503].includes(error.status ?? 0))) {
+        const wait = Math.pow(2, attempt) * 1000;
+        console.log(`Retrying in ${wait}ms...`);
+        await new Promise(r => setTimeout(r, wait));
+      } else {
+        throw error;
+      }
+    }
+  }
+  throw new Error("Max retries exceeded");
+}
+```
+
+</CodeGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="My requests are timing out">
+    - Check your network connection
+    - Ensure `https://api.hapuppy.com` is reachable from your environment
+    - For long-running requests (e.g., large context windows), increase your client timeout setting
+    - Try using streaming (`stream: true`) for long responses
+  </Accordion>
+  <Accordion title="I'm getting 401 errors but my key looks correct">
+    - Ensure the `Authorization` header format is `Bearer sk-hapuppy-xxx` (not just the key alone)
+    - Check for trailing whitespace or newlines in the key
+    - Verify the key hasn't been revoked in your dashboard
+    - Make sure you're using the correct base URL: `https://api.hapuppy.com/v1`
+  </Accordion>
+  <Accordion title="Responses differ from the model's native API">
+    Hapuppy translates between the OpenAI format and each provider's native format. Minor differences in formatting or metadata may occur. The core model output remains the same.
+  </Accordion>
+  <Accordion title="Function calling isn't working with my model">
+    Not all models support function calling / tool use. Generally, GPT-4o, Claude Sonnet, Claude Opus, and Gemini Pro support it. Check the provider's documentation for model-specific capabilities.
+  </Accordion>
+</AccordionGroup>
+
+## Need Help?
+
+If you're experiencing persistent issues, contact us at [support.hapuppy@gmail.com](mailto:support.hapuppy@gmail.com).

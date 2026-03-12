@@ -1,0 +1,117 @@
+---
+title: "Credits System"
+description: "Understand how Hapuppy's credit-based pricing works."
+---
+
+Hapuppy uses a credit-based system with simple monthly subscriptions. No per-token billing — just a daily credit allowance that refreshes every day.
+
+## Plans
+
+<CardGroup cols={3}>
+  <Card title="Lite" icon="feather">
+    **$9.99/mo**
+    - 1M daily credits
+    - 100 RPM rate limit
+    - All 100+ models
+  </Card>
+  <Card title="Standard" icon="star">
+    **$19.99/mo**
+    - 4M daily credits
+    - 100 RPM rate limit
+    - All 100+ models
+  </Card>
+  <Card title="Pro" icon="crown">
+    **$36.99/mo**
+    - 8M daily credits
+    - 100 RPM rate limit
+    - All 100+ models
+  </Card>
+</CardGroup>
+
+All plans include access to the full model catalog. The only difference is daily credit allowance.
+
+[Subscribe via Dashboard](https://hapuppy.com/dashboard)
+
+## How Credits Work
+
+Each API request consumes credits based on the model used and the number of tokens processed. Different models have different credit multipliers.
+
+### Credit Multipliers
+
+Credits are calculated from token usage with per-model multipliers:
+
+```
+credits_used = (input_tokens × input_multiplier) + (output_tokens × output_multiplier)
+```
+
+| Model | Input Multiplier | Output Multiplier |
+|-------|-----------------|-------------------|
+| GPT-4o | 1× | 3× |
+| GPT-4o mini | 0.1× | 0.4× |
+| Claude Sonnet 4 | 1× | 5× |
+| Claude Haiku 3.5 | 0.25× | 1.25× |
+| Gemini 2.5 Pro | 1.25× | 10× |
+| Gemini 2.5 Flash | 0.15× | 0.6× |
+| DeepSeek Chat | 0.14× | 0.28× |
+| DeepSeek Reasoner | 0.55× | 2.19× |
+
+<Info>
+  Multipliers are subject to change as provider pricing evolves. Check the [Models](/models) page or the dashboard for the latest rates.
+</Info>
+
+### Example Calculation
+
+Using Claude Sonnet 4 with 1,000 input tokens and 500 output tokens:
+
+```
+credits = (1000 × 1) + (500 × 5) = 1000 + 2500 = 3,500 credits
+```
+
+## Daily Credit Refresh
+
+<Note>
+  Credits refresh daily at **UTC 00:00** (midnight UTC).
+</Note>
+
+Key points about the credit system:
+
+- **Daily accumulation**: Unused credits roll over and accumulate — they do not reset to zero each day. Your balance grows by your plan's daily allowance every day.
+- **Refresh time**: New credits are added at UTC 00:00 each day.
+- **No overage charges**: When your credits run out, requests return a `429` error until the next refresh.
+- **Plan upgrades**: Take effect immediately with prorated credits.
+
+### Example
+
+If you're on the Standard plan (4M daily credits):
+
+| Day | Starting Balance | Used | Ending Balance |
+|-----|-----------------|------|----------------|
+| Day 1 | 4,000,000 | 2,500,000 | 1,500,000 |
+| Day 2 | 5,500,000 | 3,000,000 | 2,500,000 |
+| Day 3 | 6,500,000 | 6,500,000 | 0 |
+| Day 4 | 4,000,000 | 1,000,000 | 3,000,000 |
+
+## Checking Your Balance
+
+Monitor your credit usage from the [Dashboard](https://hapuppy.com/dashboard). The dashboard shows:
+
+- Current credit balance
+- Daily usage breakdown
+- Historical usage trends
+
+## FAQ
+
+<AccordionGroup>
+  <Accordion title="What happens when I run out of credits?">
+    Your API requests will return a `429 Too Many Requests` error. Credits will be replenished at the next UTC 00:00 refresh.
+  </Accordion>
+  <Accordion title="Can I buy additional credits?">
+    Currently, credits are included with your subscription plan only. Upgrade your plan for a higher daily allowance.
+  </Accordion>
+  <Accordion title="Do unused credits expire?">
+    Credits accumulate daily and do not expire as long as your subscription is active. They do not reset — they roll over.
+  </Accordion>
+  <Accordion title="How do I check my remaining credits?">
+    Visit the [Dashboard](https://hapuppy.com/dashboard) to view your current balance and usage history.
+  </Accordion>
+</AccordionGroup>

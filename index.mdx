@@ -1,97 +1,111 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "Hapuppy — AI API Gateway"
+sidebarTitle: "Introduction"
+description: "Access 100+ AI models through a single API key. OpenAI-compatible, flat-rate pricing."
 ---
 
-## Setting up
+<img
+  src="https://djgxnxoqp5vg26de.public.blob.vercel-storage.com/images/5f62c368bc6941600308072270-1pf7UFrKTkHl1uQpFEmCul2kdYwNty.png"
+  alt="Hapuppy"
+  style={{ borderRadius: '12px', maxWidth: '280px' }}
+/>
 
-Get your documentation site up and running in minutes.
+## Get Started
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+Everything you need to start using 100+ AI models with a single API key.
 
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<CardGroup cols={2}>
+  <Card title="Quickstart" icon="bolt" href="/quickstart">
+    Get up and running in under 5 minutes.
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
+  <Card title="Authentication" icon="key" href="/authentication">
+    Learn how to authenticate your API requests.
   </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
+  <Card title="Chat Completions" icon="comments" href="/chat-completions">
+    Explore the Chat Completions API endpoint.
   </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
+  <Card title="Models" icon="layer-group" href="/models">
+    Browse all available AI models.
   </Card>
-</Columns>
+</CardGroup>
 
-## Create beautiful pages
+## Why Hapuppy?
 
-Everything you need to create world-class documentation.
+<CardGroup cols={3}>
+  <Card title="OpenAI Compatible" icon="plug">
+    Drop-in replacement for the OpenAI API. Works with any SDK or tool that supports the OpenAI format.
+  </Card>
+  <Card title="100+ Models" icon="robot">
+    Access Claude, GPT, Gemini, Grok, DeepSeek, Mistral, Llama, GLM, and more — all through one API key.
+  </Card>
+  <Card title="Flat Rate Pricing" icon="tag">
+    Simple monthly subscriptions starting at $9.99/mo. No per-token billing surprises.
+  </Card>
+</CardGroup>
 
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
+## Quick Example
 
-## Need inspiration?
+Send your first request in seconds:
 
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<CodeGroup>
+
+```python Python
+from openai import OpenAI
+
+client = OpenAI(
+    api_key="sk-hapuppy-xxx",
+    base_url="https://api.hapuppy.com/v1"
+)
+
+response = client.chat.completions.create(
+    model="claude-sonnet-4-20250514",
+    messages=[
+        {"role": "user", "content": "Hello from Hapuppy!"}
+    ]
+)
+
+print(response.choices[0].message.content)
+```
+
+```typescript TypeScript
+import OpenAI from "openai";
+
+const client = new OpenAI({
+  apiKey: "sk-hapuppy-xxx",
+  baseURL: "https://api.hapuppy.com/v1",
+});
+
+const response = await client.chat.completions.create({
+  model: "claude-sonnet-4-20250514",
+  messages: [
+    { role: "user", content: "Hello from Hapuppy!" }
+  ],
+});
+
+console.log(response.choices[0].message.content);
+```
+
+```bash cURL
+curl https://api.hapuppy.com/v1/chat/completions \
+  -H "Authorization: Bearer sk-hapuppy-xxx" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "model": "claude-sonnet-4-20250514",
+    "messages": [
+      {"role": "user", "content": "Hello from Hapuppy!"}
+    ]
+  }'
+```
+
+</CodeGroup>
+
+## Integrations
+
+Hapuppy works seamlessly with your favorite AI tools:
+
+<CardGroup cols={4}>
+  <Card title="Claude Code" icon="terminal" href="/integrations#claude-code" />
+  <Card title="Cursor" icon="code" href="/integrations#cursor" />
+  <Card title="Cline" icon="wand-magic-sparkles" href="/integrations#cline" />
+  <Card title="Continue" icon="forward" href="/integrations#continue" />
+</CardGroup>
