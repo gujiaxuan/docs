@@ -44,19 +44,8 @@ Credits are calculated from token usage with per-model multipliers:
 credits_used = (input_tokens × input_multiplier) + (output_tokens × output_multiplier)
 ```
 
-| Model | Input Multiplier | Output Multiplier |
-|-------|-----------------|-------------------|
-| GPT-4o | 1× | 3× |
-| GPT-4o mini | 0.1× | 0.4× |
-| Claude Sonnet 4 | 1× | 5× |
-| Claude Haiku 3.5 | 0.25× | 1.25× |
-| Gemini 2.5 Pro | 1.25× | 10× |
-| Gemini 2.5 Flash | 0.15× | 0.6× |
-| DeepSeek Chat | 0.14× | 0.28× |
-| DeepSeek Reasoner | 0.55× | 2.19× |
-
 <Info>
-  Multipliers are subject to change as provider pricing evolves. Check the [Models](/models) page or the dashboard for the latest rates.
+  Multipliers vary by model. See the full list with live rates on the [Models page](https://hapuppy.com/models).
 </Info>
 
 ### Example Calculation
@@ -78,7 +67,7 @@ Key points about the credit system:
 - **Daily accumulation**: Unused credits roll over and accumulate — they do not reset to zero each day. Your balance grows by your plan's daily allowance every day.
 - **Refresh time**: New credits are added at UTC 00:00 each day.
 - **No overage charges**: When your credits run out, requests return a `429` error until the next refresh.
-- **Plan upgrades**: Take effect immediately with prorated credits.
+- **Plan upgrades**: Take effect immediately. Your group and daily allowance are updated right away.
 
 ### Example
 

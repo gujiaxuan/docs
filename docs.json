@@ -36,7 +36,6 @@
             "group": "API Reference",
             "pages": [
               "chat-completions",
-              "models",
               "errors"
             ]
           }
@@ -48,8 +47,7 @@
           {
             "group": "Support",
             "pages": [
-              "faq",
-              "changelog"
+              "faq"
             ]
           }
         ]
@@ -71,7 +69,7 @@
   },
   "footer": {
     "socials": {
-      "discord": "https://discord.gg/hapuppy"
+      "discord": "https://discord.gg/yGx83ukw8x"
     }
   }
 }
