@@ -28,8 +28,7 @@
             "group": "Guides",
             "pages": [
               "authentication",
-              "integrations",
-              "credits"
+              "integrations"
             ]
           },
           {
@@ -56,6 +55,10 @@
   },
   "navbar": {
     "links": [
+      {
+        "label": "Credits & Pricing",
+        "href": "https://hapuppy.com/credits"
+      },
       {
         "label": "Support",
         "href": "mailto:support.hapuppy@gmail.com"
