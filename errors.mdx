@@ -72,14 +72,14 @@ When a request fails, Hapuppy returns a JSON error response:
 ```json
 {
   "error": {
-    "message": "Insufficient credits. Credits will refresh at UTC 00:00.",
+    "message": "Insufficient credits. Credits will refresh at midnight Beijing time (UTC 16:00).",
     "type": "rate_limit_error",
     "code": "insufficient_credits"
   }
 }
 ```
 
-**Fix:** Your daily credits have been used up. Wait for the next UTC 00:00 refresh or [upgrade your plan](https://hapuppy.com/dashboard).
+**Fix:** Your daily credits have been used up. Wait for the next midnight Beijing time (UTC 16:00) refresh or [upgrade your plan](https://hapuppy.com/dashboard).
 
 ### 400 — Invalid Model
 
